@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const schema = require('./functions.js');
 require('dotenv').config()
 
-const {Padhlo,Course,Semester,Subject,Unit,Topic} = require('../Files/Schema/PadhloSchema.js');
+const {Padhlo,Course,Semester,Subject,Unit,Topic} = require('./PadhloSchema.js');
 
 const app = express();
 const port = process.env.PORT || 3000 

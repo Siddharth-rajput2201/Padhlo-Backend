@@ -2,7 +2,7 @@
 // const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const fs = require('fs');
-const {Padhlo,Course} = require('./Schema/PadhloSchema');
+const {Padhlo,Course} = require('./PadhloSchema');
 
 // const app = express();
 
