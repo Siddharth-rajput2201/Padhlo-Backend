@@ -16,8 +16,8 @@ app.listen(port, function () {
     console.log('Server rocking on port 3000');
 })
 
-mongoose.connect(process.env.DB_HOST_URL,{ useNewUrlParser: true ,useUnifiedTopology: true})
-//mongoose.connect("mongodb://localhost:27017/padhloDB",{ useNewUrlParser: true ,useUnifiedTopology: true})
+//mongoose.connect(process.env.DB_HOST_URL,{ useNewUrlParser: true ,useUnifiedTopology: true})
+mongoose.connect("mongodb://localhost:27017/padhloDB",{ useNewUrlParser: true ,useUnifiedTopology: true})
 
 console.log("Connected to database");
 
@@ -1187,7 +1187,7 @@ app.post('/questionPaperSubjects',async function(req, res)
     
 });
 
-app.post('/questionaPaperYears',async function(req, res)
+app.post('/questionPaperYears',async function(req, res)
 {
     await QuestionPaper.aggregate([
         {$unwind:"$courses"},
