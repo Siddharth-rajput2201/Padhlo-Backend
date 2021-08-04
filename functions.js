@@ -1,8 +1,9 @@
 // const express = require('express');
 // const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const fs = require('fs');
-const {Padhlo,Course} = require('./PadhloSchema');
+const {Padhlo} = require('./PadhloSchema');
+const {QuestionPaper} = require('./QuestionPaperSchema');
+const mongoose = require('mongoose');
 
 // const app = express();
 
@@ -36,10 +37,30 @@ async function saveFile()
     courses : [
    
     ],
-       
-    
+         
 });
  await padhloSchema.save(function(err) {
+        if(!err)
+        {
+            console.log('Stored Successfully')
+        }
+        else
+        {
+            console.log(err);
+        }
+    });
+}
+
+async function saveQuestionPaper()
+{
+    const questionPaperSchema = new QuestionPaper({
+        
+    QuestionPaper : [
+   
+    ],
+         
+});
+ await questionPaperSchema.save(function(err) {
         if(!err)
         {
             console.log('Stored Successfully')
@@ -70,4 +91,4 @@ async function updateCourseName (courseToUpdate , updatedCourseName)
     )
 }
 
-module.exports = {saveFile,updateCourseName}
+module.exports = {saveFile,updateCourseName,saveQuestionPaper}

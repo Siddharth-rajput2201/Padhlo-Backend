@@ -55,7 +55,7 @@ const PadhloSchema = mongoose.Schema({
         type : [CourseSchema],
         unique : true,
     }
-})
+});
 // const PadhloSchema = mongoose.Schema({
 //   courses : [
 //    {
