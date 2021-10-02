@@ -1142,3 +1142,34 @@ app.post('/questionPaperYears',async function(req, res)
     })
 
 });
+
+
+
+app.post('/questionPaperSubjects',async function(req, res)
+{
+   await QuestionPaper.aggregate([
+        {$unwind:"$courses"},
+        {$unwind:"$courses.semesters"},
+        {$match:{"courses.course":req.body.course,"courses.semesters.sem":parseInt(req.body.semester)}},
+        {$project : {
+            "_id":0,
+            "__v" : 0,
+            "courses._id" : 0,
+            "courses.semesters._id" : 0 , 
+            "courses.semesters.subjects._id": 0 , 
+            "courses.semesters.subjects.years": 0,
+
+        }}
+    ], function(err,result)
+    {
+        if(!err)
+        {
+            res.send(result);
+        }
+        else
+        {
+            res.send("error");
+        }
+    })
+
+});
