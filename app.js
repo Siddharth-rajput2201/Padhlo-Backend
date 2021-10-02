@@ -1200,3 +1200,27 @@ app.post('/questionPaperSemesters',async function(req, res)
     })
 
 });
+
+
+app.post('/questionPaperCourses',async function(req, res)
+{
+    await QuestionPaper.aggregate([
+        {$project : {
+            "_id":0,
+            "__v" : 0,
+            "courses._id" : 0,
+            "courses.semesters": 0 ,
+        }}
+    ], function(err,result)
+    {
+        if(!err)
+        {
+            res.send(result);
+        }
+        else
+        {
+            res.send("error");
+        }
+    })
+
+});
