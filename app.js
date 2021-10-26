@@ -11,6 +11,7 @@ const port = process.env.PORT || 3000
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+let serverStatus = true;
 
 app.listen(port, function () {
     console.log('Server rocking on port 3000');
@@ -1223,4 +1224,30 @@ app.post('/questionPaperCourses',async function(req, res)
         }
     })
 
+});
+
+
+app.get('/serverStatus',function(req,res)
+{
+    return res.send(serverStatus);
+});
+
+app.post('/changeServerStatus',function(req, res)
+{
+    if(process.env.DB_STATUS_CHANGE_PASSWORD == req.body.password && req.body.statusChange == 'true')
+    {
+      serverStatus = true;
+      return res.send(serverStatus);
+    }
+    else if(process.env.DB_STATUS_CHANGE_PASSWORD == req.body.password && req.body.statusChange == 'false')
+    {
+      serverStatus = false;
+      return res.send(serverStatus);
+    }
+    else
+    {
+      res.status(401);
+      res.send("ERROR")
+    }
+    
 });
