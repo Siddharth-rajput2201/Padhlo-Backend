@@ -22,6 +22,8 @@ const UnitSchema = mongoose.Schema({
 
 const SubjectSchema = mongoose.Schema({
     subject : String,
+    subjectBookName : String,
+    subjectBookUrl : String,
     units : {
         type : [UnitSchema],
         unique : true,

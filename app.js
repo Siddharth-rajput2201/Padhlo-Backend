@@ -17,8 +17,8 @@ app.listen(port, function () {
     console.log('Server rocking on port 3000');
 })
 
-mongoose.connect(process.env.DB_HOST_URL,{ useNewUrlParser: true ,useUnifiedTopology: true})
-//mongoose.connect("mongodb://localhost:27017/padhloDB",{ useNewUrlParser: true ,useUnifiedTopology: true})
+//mongoose.connect(process.env.DB_HOST_URL,{ useNewUrlParser: true ,useUnifiedTopology: true})
+mongoose.connect("mongodb://localhost:27017/padhloDB",{ useNewUrlParser: true ,useUnifiedTopology: true})
 
 console.log("Connected to database");
 
@@ -98,6 +98,72 @@ app.put('/updateSubject', async function(req, res)
               {
                 "sub.subject": req.body.oldSubject
               }
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.put('/updateSubjectBookName', async function(req, res)
+{
+    await Padhlo.updateOne(
+         {},
+         {$set : {"courses.$[c].semesters.$[s].subjects.$[sub].subjectBookName": req.body.newSubjectBookName}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+              {
+                "sub.subject": req.body.subject
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.put('/updateSubjectBookUrl', async function(req, res)
+{
+    await Padhlo.updateOne(
+         {},
+         {$set : {"courses.$[c].semesters.$[s].subjects.$[sub].subjectBookUrl": req.body.newSubjectBookUrl}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+              {
+                "sub.subject": req.body.subject
+              },
             ]
           },
         function(err)
@@ -390,7 +456,9 @@ app.get('/insertSemester', async function(req, res)
 app.get('/insertSubject', async function(req, res)
 {
     const subject = new Subject({
-        subject : req.body.subject
+        subject : req.body.subject,
+        subjectBookName : req.body.subjectBookName,
+        subjectBookUrl : req.body.subjectBookUrl
     })
     await Padhlo.updateOne(
          {},
@@ -415,6 +483,28 @@ app.get('/insertSubject', async function(req, res)
             {
                 res.status(404).send(err);
                 console.log(err);
+            }
+        }
+        )
+});
+
+app.get('/insertSemester', async function(req, res)
+{
+    const semester = new Semester({
+        sem : parseInt(req.body.semester)
+    })
+    await Padhlo.updateOne(
+        {"courses.course":req.body.course},
+        {$addToSet : {"courses.$.semesters":semester}},
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
             }
         }
         )
@@ -847,6 +937,243 @@ app.delete('/deleteQuestionPaperCourse', async function(req,res)
         )
 });
 
+app.delete('/deleteSemester', async function(req, res)
+{
+    await Padhlo.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters": {"sem":parseInt(req.body.semester)}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.delete('/deleteQuestionPaperSemester', async function(req, res)
+{
+    await QuestionPaper.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters": {"sem":parseInt(req.body.semester)}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.delete('/deleteSubject', async function(req, res)
+{
+    await Padhlo.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters.$[s].subjects": {"subject":req.body.subject}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.delete('/deleteQuestionPaperSubject', async function(req, res)
+{
+    await QuestionPaper.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters.$[s].subjects": {"subject":req.body.subject}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.delete('/deleteQuestionPaperYear', async function(req, res)
+{
+    await QuestionPaper.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters.$[s].subjects.$[sub].years": {"year":req.body.year}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+              {
+                "sub.subject": req.body.subject
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+
+app.delete('/deleteUnit', async function(req, res)
+{
+    await Padhlo.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters.$[s].subjects.$[sub].units": {"unit":parseInt(req.body.unit)}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+              {
+                "sub.subject": req.body.subject
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.delete('/deleteTopic', async function(req, res)
+{
+    await Padhlo.updateOne(
+         {},
+         {$pull : {"courses.$[c].semesters.$[s].subjects.$[sub].units.$[u].topics": {"topic":req.body.topic}}},
+          {
+            arrayFilters: [
+              {
+                "c.course": req.body.course
+              },
+              {
+                "s.sem": parseInt(req.body.semester)
+              },
+              {
+                "sub.subject": req.body.subject
+              },
+              {
+                "u.unit": parseInt(req.body.unit)
+              },
+            ]
+          },
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err);
+            }
+        }
+        )
+});
+
+app.delete('/deleteQuestionPaperCourse', async function(req,res)
+{
+    await QuestionPaper.updateOne(
+        {},
+        {"$pull": {courses : {course : req.body.course}}},
+        {multi : true},
+        function(err)
+        {
+            if(!err)
+            {
+                res.status(200).send("OK");
+            }
+            else
+            {
+                res.status(404).send(err);
+                console.log(err)
+            }
+        }
+        )
+});
 
 app.get('/courseData',async function(req, res)
 {
@@ -1085,16 +1412,13 @@ app.get('/allQuestionPaper',function(req, res)
 app.get('/allDataQuestionPaper',async function(req, res)
 {
     await QuestionPaper.aggregate([
-        // {$unwind:"$courses"},
-        // {$unwind:"$courses.semesters"},
-        // {$unwind:"$courses.semesters.subjects"},
         {$project : {
         "_id":0,
         "__v" : 0,
         "courses._id" : 0,
         "courses.semesters._id" : 0 , 
         "courses.semesters.subjects._id": 0 , 
-        "courses.semesters.subjects.years_id":0,
+        "courses.semesters.subjects.years._id":0,
     }},
 
     ], function(err,result)
@@ -1110,8 +1434,6 @@ app.get('/allDataQuestionPaper',async function(req, res)
     })
     
 });
-
-
 
 app.post('/questionPaperYears',async function(req, res)
 {
@@ -1144,8 +1466,6 @@ app.post('/questionPaperYears',async function(req, res)
 
 });
 
-
-
 app.post('/questionPaperSubjects',async function(req, res)
 {
    await QuestionPaper.aggregate([
@@ -1175,8 +1495,6 @@ app.post('/questionPaperSubjects',async function(req, res)
 
 });
 
-
-
 app.post('/questionPaperSemesters',async function(req, res)
 {
     await QuestionPaper.aggregate([
@@ -1202,7 +1520,6 @@ app.post('/questionPaperSemesters',async function(req, res)
 
 });
 
-
 app.post('/questionPaperCourses',async function(req, res)
 {
     await QuestionPaper.aggregate([
@@ -1225,7 +1542,6 @@ app.post('/questionPaperCourses',async function(req, res)
     })
 
 });
-
 
 app.get('/serverStatus',function(req,res)
 {
